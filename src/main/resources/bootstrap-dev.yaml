@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: daily-job
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        group: ${nacos.group}
+        namespace: ${nacos.ns}
+        server-addr: ${nacos.addr}
+nacos:
+  addr: loaalhost:8848
+  group: DEFAULT_GROUP
+  ns: github-ns-id
+
+# >>>> nacos 配置中心 <<<<
+#server:
+#  port: 8080
+#  servlet:
+#    context-path: /
+#spring:
+#  mail:
+#    default-encoding: UTF-8
+#    protocol: smtp
+#    host: smtp.qq.com
+#    username: mail
+#    password: mailpass
+#job:
+#  juejin:
+#    taskName: 掘金每日任务
+#    baseApi: https://api.juejin.cn
+#    cookie: cookie
