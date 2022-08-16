@@ -25,6 +25,19 @@ nacos:
 #    host: smtp.qq.com
 #    username: mail
 #    password: mailpass
+#    port: 465
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          socketFactory:
+#            class: javax.net.ssl.SSLSocketFactory
+#            port: 465
+#          ssl:
+#            enable: true
+#          starttls:
+#            enable: true
+#            required: true
 #job:
 #  juejin:
 #    taskName: 掘金每日任务

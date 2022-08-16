@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -31,6 +32,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
+@RefreshScope
 @RequiredArgsConstructor
 public class JueJinJob implements Job {
 
@@ -39,28 +41,36 @@ public class JueJinJob implements Job {
     private final JavaMailSender javaMailSender;
 
     @Override
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "#{jobConf.jueJin.cron}")
     public Object task() {
-        String result = "任务执行结果:".concat(System.lineSeparator());
+        StringBuilder result = new StringBuilder("任务执行结果:")
+                .append(System.lineSeparator());
         try {
             Utils.isTrue(!getTodayStatus(),
-                    () -> result.concat(String.format("签到结果【%s】", checkIn())).concat(System.lineSeparator()));
+                    () -> result
+                            .append(String.format("签到结果【%s】", checkIn()))
+                            .append(System.lineSeparator()));
             Utils.isTrue(freeDrawLotteryCount() > 0,
-                    () -> result.concat(String.format("抽奖结果【%s】", drawLottery())).concat(System.lineSeparator()));
+                    () -> result
+                            .append(String.format("抽奖结果【%s】", drawLottery()))
+                            .append(System.lineSeparator()));
             Optional.ofNullable(notCollectBugs())
                     .ifPresent(bugs -> {
                         bugs.forEach(this::collectBug);
-                        result.concat(String.format("收集BUG:【%s】", String.valueOf(bugs.size()).concat(System.lineSeparator())));
+                        result
+                                .append(String.format("收集BUG:【%s】", bugs.size()))
+                                .append(System.lineSeparator());
                     });
             Optional.ofNullable(firstBigLotteryHistoryId())
-                    .ifPresent(historyId ->
-                            result.concat(String.format("粘幸运结果【%s】", dipLucky(historyId))).concat(System.lineSeparator()));
+                    .ifPresent(historyId -> result
+                            .append(String.format("粘幸运结果【%s】", dipLucky(historyId)))
+                            .append(System.lineSeparator()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            result.concat(e.getMessage());
+            result.append(e.getMessage());
         }
-        log.info(result);
-        sendMail(result);
+        log.info(result.toString());
+        sendMail(result.toString());
         return result;
     }
 

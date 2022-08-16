@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Data
 @RefreshScope
-@Configuration
+@Configuration("jobConf")
 @EnableScheduling
 @ConfigurationProperties("job")
 public class JobConf {
@@ -16,6 +16,7 @@ public class JobConf {
 
     @Data
     public static class JueJinProp {
+        private String cron = "0 0 8 * * ?";
         private String baseApi = "https://api.juejin.cn";
         private String cookie;
         private String taskName;
