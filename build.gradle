@@ -5,7 +5,8 @@ plugins {
 
 group 'io.iifly'
 version '1.0.0'
-
+sourceCompatibility='8'
+targetCompatibility='8'
 repositories {
     // Gradle没有自己的中央仓库
     // 先从本地maven仓库寻找依赖的jar包，存在则直接使用本地maven仓库的jar
