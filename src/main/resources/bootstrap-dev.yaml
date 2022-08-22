@@ -15,7 +15,7 @@ nacos:
 
 # >>>> nacos 配置中心 <<<<
 #server:
-#  port: 8080
+#  port: 8888
 #  servlet:
 #    context-path: /
 #spring:
@@ -40,6 +40,7 @@ nacos:
 #            required: true
 #job:
 #  juejin:
+#    cron: '0 0 8 * * ?'
 #    taskName: 掘金每日任务
 #    baseApi: https://api.juejin.cn
 #    cookie: cookie
