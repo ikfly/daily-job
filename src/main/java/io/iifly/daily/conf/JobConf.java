@@ -1,10 +1,17 @@
 package io.iifly.daily.conf;
 
 import lombok.Data;
+import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.time.LocalDate;
 
 @Data
 @RefreshScope
@@ -13,6 +20,50 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ConfigurationProperties("job")
 public class JobConf {
     private JueJinProp jueJin;
+
+    private WxProp wx;
+
+    private WeatherProp weather;
+
+
+    @Bean
+    public WxMpService wxMpService() {
+        //wx 配置
+        WxMpInMemoryConfigStorage wxStorage = new WxMpInMemoryConfigStorage();
+        wxStorage.setAppId(wx.getAppId());
+        wxStorage.setSecret(wx.getSecret());
+        WxMpService wxMpService = new WxMpServiceImpl();
+        wxMpService.setWxMpConfigStorage(wxStorage);
+        return wxMpService;
+    }
+
+    @Data
+    public static class WxProp {
+        private String cron = "0 0 8 * * ?";
+        private String appId;
+        private String secret;
+        private String toUser;
+        private String templateId;
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate babyBirthDay;
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate loveDay;
+    }
+
+    @Data
+    public static class WeatherProp {
+        // https://v0.yiketianqi.com/api?unescape=1&version=v91&appid=43656176&appsecret=I42og6Lm&ext=&cityid=&city=
+        private String baseApi = "https://v0.yiketianqi.com/api"; // 推荐
+        //        private String baseApi = "https://v0.yiketianqi.com/api"; // 备用
+        private String unescape = "1";
+        private String version = "v61";
+        private String appid = "43656176";
+        private String appsecret = "I42og6Lm";
+        private String ext;
+        private String city;
+        private String cityid;
+        private String province;
+    }
 
     @Data
     public static class JueJinProp {

@@ -44,3 +44,11 @@ nacos:
 #    taskName: 掘金每日任务
 #    baseApi: https://api.juejin.cn
 #    cookie: cookie
+  wx:
+    cron: '0 0 8 * * ?'
+    appId: appid
+    secret: secret
+    toUser: toUser
+    templateId: templateId
+    babyBirthDay: babyBirthDay
+    loveDay: loveDay

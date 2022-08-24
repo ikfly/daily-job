@@ -5,8 +5,8 @@ plugins {
 
 group 'io.iifly'
 version '1.0.0'
-sourceCompatibility='8'
-targetCompatibility='8'
+sourceCompatibility = '8'
+targetCompatibility = '8'
 repositories {
     // Gradle没有自己的中央仓库
     // 先从本地maven仓库寻找依赖的jar包，存在则直接使用本地maven仓库的jar
@@ -19,12 +19,13 @@ repositories {
 
 ext {
     libVersions = [
-            springBoot : '2.3.12.RELEASE',
-            springCloud : 'Hoxton.SR12',
-            springCloudAlibaba : '2.2.8.RELEASE',
-            lombok : '1.18.20',
-            fastjson : '2.0.11',
-            hutool : '5.8.5',
+            springBoot        : '2.3.12.RELEASE',
+            springCloud       : 'Hoxton.SR12',
+            springCloudAlibaba: '2.2.8.RELEASE',
+            lombok            : '1.18.20',
+            fastjson          : '2.0.11',
+            hutool            : '5.8.5',
+            wxmp              : '3.3.0',
     ]
 }
 
@@ -40,5 +41,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${libVersions.lombok}"
     compile "cn.hutool:hutool-http:${libVersions.hutool}"
     compile "com.alibaba:fastjson:${libVersions.fastjson}"
+    implementation "com.github.binarywang:weixin-java-mp:${libVersions.wxmp}"
 
 }
