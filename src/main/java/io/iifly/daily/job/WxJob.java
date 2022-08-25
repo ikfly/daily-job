@@ -12,6 +12,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -42,14 +43,16 @@ public class WxJob implements Job{
         date.add(new WxMpTemplateData("high", weather.getTem1(), "#EE9572"));
         date.add(new WxMpTemplateData("birth", Utils.birthStr(jobConf.getWx().getBabyBirthDay()), "#E066FF"));
         date.add(new WxMpTemplateData("love", Utils.loveStr(jobConf.getWx().getLoveDay()), "#FF6EB4"));
-        date.add(new WxMpTemplateData("remark", "爱你每一天", "#FF6EB4"));
+        date.add(new WxMpTemplateData("remark", Utils.dailySayingForShanBay(LocalDate.now()).toString() , "#1A94E6"));
         JobConf.WxProp wx = jobConf.getWx();
-        WxMpTemplateMessage message = WxMpTemplateMessage
-                .builder()
-                .toUser(wx.getToUser())
-                .templateId(wx.getTemplateId())
-                .data(date)
-                .build();
-        Utils.pushTemplateMessage(wxMpService, message);
+        wx.getToUser().forEach(user -> {
+            WxMpTemplateMessage message = WxMpTemplateMessage
+                    .builder()
+                    .toUser(user)
+                    .templateId(wx.getTemplateId())
+                    .data(date)
+                    .build();
+            Utils.pushTemplateMessage(wxMpService, message);
+        });
     }
 }

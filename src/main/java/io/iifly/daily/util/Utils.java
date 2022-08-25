@@ -1,13 +1,17 @@
 package io.iifly.daily.util;
 
+import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 import com.google.common.collect.Lists;
 import io.iifly.daily.conf.JobConf;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
@@ -36,7 +40,8 @@ import java.util.Optional;
 @Slf4j
 public class Utils {
 
-    public static final String WEATHER_PATTERN = "%s %s 温度:%s℃\n%s 天气：%s  %s~%s℃";
+    public static final String SHANBAY_API = "https://apiv3.shanbay.com/weapps/dailyquote/quote/?date=%s";
+    public static final String YOUDAO_API = "https://dict.youdao.com/infoline?apiversion=5.0&date=%s";
 
     /**
      * 满足表达式则执行
@@ -146,19 +151,24 @@ public class Utils {
         LocalDate now = LocalDate.now();
         int loveYear = now.getYear() - loveDay.getYear();
         if (now.getMonthValue() == loveDay.getMonthValue() && now.getDayOfMonth() == loveDay.getDayOfMonth()) {
-            return String.format("亲爱的，今天是是我们相恋%s周年纪念日哦！我们已经相恋%天了！", loveYear, now.toEpochDay() - loveDay.toEpochDay());
+            return String.format("亲爱的，今天是是我们相恋%s周年纪念日哦！我们已经相恋%s天了！", loveYear, now.toEpochDay() - loveDay.toEpochDay() + 1);
         }
         LocalDate nextLoveday = LocalDate.of(now.getYear(), loveDay.getMonthValue(), loveDay.getDayOfMonth());
         if (now.isAfter(nextLoveday)) {
             nextLoveday = nextLoveday.plusYears(1);
         }
         return String.format("亲爱的，我们已经相恋%s天了！再过%s天就是我们%s周年纪念日了！",
-                now.toEpochDay() - loveDay.toEpochDay(),
+                now.toEpochDay() - loveDay.toEpochDay() + 1,
                 nextLoveday.toEpochDay() - now.toEpochDay(),
                 loveYear + 1
         );
     }
 
+    /**
+     * 当天天气
+     * @param weather
+     * @return
+     */
     public static Weather todayWeather(JobConf.WeatherProp weather) {
         HttpRequest request = HttpUtil.createGet(weather.getBaseApi())
                 .form("unescape", weather.getUnescape())
@@ -184,4 +194,49 @@ public class Utils {
         private String tem1;
     }
 
+    /**
+     * 有道每日一句
+     * @param date
+     * @return
+     */
+    public static Saying dailySayingForYouDao(LocalDate date) {
+        String dateStr = LocalDateTimeUtil.formatNormal(date);
+        HttpRequest request = HttpUtil.createGet(String.format(YOUDAO_API, dateStr));
+        HttpResponse response = httpExecute(request);
+        return JSON.parseArray(JSON.parseObject(response.body()).getString(dateStr), Saying.class)
+                .stream()
+                .distinct()
+                .findAny()
+                .orElse(dailySayingForShanBay(date));
+    }
+
+    /**
+     * 扇贝每日一句
+     * @param date
+     * @return
+     */
+    public static Saying dailySayingForShanBay(LocalDate date) {
+        String dateStr = LocalDateTimeUtil.formatNormal(date);
+        HttpRequest request = HttpUtil.createGet(String.format(SHANBAY_API, dateStr));
+        HttpResponse response = httpExecute(request);
+        JSONObject json = JSON.parseObject(response.body());
+        return new Saying()
+                .setChinese(json.getString("translation"))
+                .setEnglish(json.getString("content"));
+    }
+
+    @Data
+    @Accessors(chain = true)
+    public static class Saying {
+        @JSONField(name = "title")
+        private String english;
+        @JSONField(name = "summary")
+        private String chinese;
+
+        @Override
+        public String toString() {
+            return "დ " + english + "\n" +
+                   "ღ " + chinese;
+        }
+    }
 }

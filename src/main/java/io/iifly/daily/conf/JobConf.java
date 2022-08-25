@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @RefreshScope
@@ -42,7 +43,7 @@ public class JobConf {
         private String cron = "0 0 8 * * ?";
         private String appId;
         private String secret;
-        private String toUser;
+        private List<String> toUser;
         private String templateId;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate babyBirthDay;
