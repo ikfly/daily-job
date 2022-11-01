@@ -153,14 +153,14 @@ public class Utils {
         if (now.getMonthValue() == loveDay.getMonthValue() && now.getDayOfMonth() == loveDay.getDayOfMonth()) {
             return String.format("亲爱的，今天是是我们相恋%s周年纪念日哦！我们已经相恋%s天了！", loveYear, now.toEpochDay() - loveDay.toEpochDay() + 1);
         }
-        LocalDate nextLoveday = LocalDate.of(now.getYear(), loveDay.getMonthValue(), loveDay.getDayOfMonth());
-        if (now.isAfter(nextLoveday)) {
-            nextLoveday = nextLoveday.plusYears(1);
+        LocalDate nextLoveDay = LocalDate.of(now.getYear(), loveDay.getMonthValue(), loveDay.getDayOfMonth());
+        if (now.isAfter(nextLoveDay)) {
+            nextLoveDay = nextLoveDay.plusYears(1);
         }
         return String.format("亲爱的，我们已经相恋%s天了！再过%s天就是我们%s周年纪念日了！",
                 now.toEpochDay() - loveDay.toEpochDay() + 1,
-                nextLoveday.toEpochDay() - now.toEpochDay(),
-                loveYear + 1
+                nextLoveDay.toEpochDay() - now.toEpochDay(),
+                loveYear
         );
     }
 
