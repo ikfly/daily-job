@@ -152,7 +152,7 @@ public class Utils {
         LocalDate now = LocalDate.now();
         int loveYear = now.getYear() - loveDay.getYear();
         if (now.getMonthValue() == loveDay.getMonthValue() && now.getDayOfMonth() == loveDay.getDayOfMonth()) {
-            return String.format("亲爱的，今天是是我们相恋%s周年纪念日哦！我们已经相恋%s天了！", loveYear, now.toEpochDay() - loveDay.toEpochDay() + 1);
+            return String.format("亲爱的，今天是我们相恋%s周年纪念日哦！我们已经相恋%s天了！", loveYear, now.toEpochDay() - loveDay.toEpochDay() + 1);
         }
         LocalDate nextLoveDay = LocalDate.of(now.getYear(), loveDay.getMonthValue(), loveDay.getDayOfMonth());
         if (now.isAfter(nextLoveDay)) {
