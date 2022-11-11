@@ -143,8 +143,9 @@ public class Utils {
         LocalDate nextBirthday = LocalDate.of(now.getYear(), birthday.getMonthValue(), birthday.getDayOfMonth());
         if (now.isAfter(birthday)) {
             nextBirthday = nextBirthday.plusYears(1);
+            age += 1;
         }
-        return String.format("宝宝，还差%s天就是你%s岁生日了哦！", nextBirthday.toEpochDay() - now.toEpochDay(), age + 1);
+        return String.format("宝宝，还差%s天就是你%s岁生日了哦！", nextBirthday.toEpochDay() - now.toEpochDay(), age);
     }
 
     public static String loveStr(LocalDate loveDay) {
@@ -156,6 +157,7 @@ public class Utils {
         LocalDate nextLoveDay = LocalDate.of(now.getYear(), loveDay.getMonthValue(), loveDay.getDayOfMonth());
         if (now.isAfter(nextLoveDay)) {
             nextLoveDay = nextLoveDay.plusYears(1);
+            loveYear += 1;
         }
         return String.format("亲爱的，我们已经相恋%s天了！再过%s天就是我们%s周年纪念日了！",
                 now.toEpochDay() - loveDay.toEpochDay() + 1,
