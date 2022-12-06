@@ -5,8 +5,8 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 import com.google.common.collect.Lists;
 import io.iifly.daily.conf.JobConf;
@@ -24,6 +24,7 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
+import org.springframework.util.StringUtils;
 
 import javax.mail.internet.MimeMessage;
 import java.lang.reflect.Type;
@@ -40,8 +41,11 @@ import java.util.Optional;
 @Slf4j
 public class Utils {
 
+    private static final String BLANK = "\u3164";
     public static final String SHANBAY_API = "https://apiv3.shanbay.com/weapps/dailyquote/quote/?date=%s";
     public static final String YOUDAO_API = "https://dict.youdao.com/infoline?apiversion=5.0&date=%s";
+    public static final String AA1_WENAN_YINGWEN_API = "https://v.api.aa1.cn/api/api-wenan-yingwen/index.php?type=json";
+    public static final String AA1_RENJIAN_API = "https://v.api.aa1.cn/api/api-renjian/index.php?type=json";
 
     /**
      * 满足表达式则执行
@@ -196,20 +200,61 @@ public class Utils {
         private String tem1;
     }
 
+
+    public static String dailySaying(LocalDate date) {
+        String res = dailySayingForShanBay(date).toString();
+        if(StringUtils.hasText(res)){
+            return res;
+        }
+        res = dailySayingForAa1Renjian().toString();
+        if(StringUtils.hasText(res)){
+            return res;
+        }
+        res = dailySayingForAa1WenanYingwen().toString();
+        if(StringUtils.hasText(res)){
+            return res;
+        }
+        return "开心快乐每一天！";
+    }
+    /**
+     * aa1 我在人间凑数的日子 一言 api
+     * @return
+     */
+    public static Saying dailySayingForAa1Renjian() {
+        HttpRequest request = HttpUtil.createGet(AA1_RENJIAN_API);
+        HttpResponse response = httpExecute(request);
+        JSONObject json = JSON.parseObject(response.body());
+        return new Saying().setContent(json.getString("renjian"));
+    }
+
+    /**
+     * aa1 汉英文案 一言 api
+     * @return
+     */
+    public static Saying dailySayingForAa1WenanYingwen() {
+        HttpRequest request = HttpUtil.createGet(AA1_WENAN_YINGWEN_API);
+        HttpResponse response = httpExecute(request);
+        JSONObject json = JSON.parseObject(response.body());
+        return new Saying().setContent(json.getString("text"));
+    }
     /**
      * 有道每日一句
      * @param date
      * @return
      */
     public static Saying dailySayingForYouDao(LocalDate date) {
+        Saying saying = new Saying();
         String dateStr = LocalDateTimeUtil.formatNormal(date);
         HttpRequest request = HttpUtil.createGet(String.format(YOUDAO_API, dateStr));
         HttpResponse response = httpExecute(request);
-        return JSON.parseArray(JSON.parseObject(response.body()).getString(dateStr), Saying.class)
-                .stream()
-                .distinct()
-                .findAny()
-                .orElse(dailySayingForShanBay(date));
+        JSONArray jsonArray = JSON.parseArray(JSON.parseObject(response.body()).getString(dateStr));
+        if (jsonArray.isEmpty()) {
+            return saying;
+        }
+        JSONObject json = jsonArray.getJSONObject(0);
+        return saying
+                .setTranslation(json.getString("summary"))
+                .setContent(json.getString("title"));
     }
 
     /**
@@ -221,24 +266,29 @@ public class Utils {
         String dateStr = LocalDateTimeUtil.formatNormal(date);
         HttpRequest request = HttpUtil.createGet(String.format(SHANBAY_API, dateStr));
         HttpResponse response = httpExecute(request);
-        JSONObject json = JSON.parseObject(response.body());
-        return new Saying()
-                .setChinese(json.getString("translation"))
-                .setEnglish(json.getString("content"));
+        return JSON.parseObject(response.body(), Saying.class);
     }
 
     @Data
     @Accessors(chain = true)
     public static class Saying {
-        @JSONField(name = "title")
-        private String english;
-        @JSONField(name = "summary")
-        private String chinese;
+        private String content;
+        private String translation;
 
         @Override
         public String toString() {
-            return "დ " + english + "\n" +
-                   "ღ " + chinese;
+            StringBuilder sb = new StringBuilder();
+            if (StringUtils.hasText(content) && !BLANK.equals(translation)) {
+                sb.append("დ ").append(content).append("\n");
+            }
+            if (StringUtils.hasText(translation) && !BLANK.equals(translation)) {
+                sb.append("ღ ").append(translation).append("\n");
+            }
+            return sb.toString();
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(dailySaying(LocalDate.now()));
     }
 }
