@@ -43,7 +43,7 @@ public class WxJob implements Job{
         date.add(new WxMpTemplateData("high", weather.getTem1(), "#EE9572"));
         date.add(new WxMpTemplateData("birth", Utils.birthStr(jobConf.getWx().getBabyBirthDay()), "#E066FF"));
         date.add(new WxMpTemplateData("love", Utils.loveStr(jobConf.getWx().getLoveDay()), "#FF6EB4"));
-        date.add(new WxMpTemplateData("remark", Utils.dailySayingForShanBay(LocalDate.now()).toString() , "#1A94E6"));
+        date.add(new WxMpTemplateData("remark", Utils.dailySaying(LocalDate.now()) , "#1A94E6"));
         JobConf.WxProp wx = jobConf.getWx();
         wx.getToUser().forEach(user -> {
             WxMpTemplateMessage message = WxMpTemplateMessage
