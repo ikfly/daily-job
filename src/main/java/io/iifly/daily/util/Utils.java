@@ -145,7 +145,7 @@ public class Utils {
             return String.format("宝宝，今天是你%s岁生日！要快乐哦！", age);
         }
         LocalDate nextBirthday = LocalDate.of(now.getYear(), birthday.getMonthValue(), birthday.getDayOfMonth());
-        if (now.isAfter(birthday)) {
+        if (now.isAfter(nextBirthday)) {
             nextBirthday = nextBirthday.plusYears(1);
             age += 1;
         }
