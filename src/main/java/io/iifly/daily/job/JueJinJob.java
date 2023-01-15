@@ -1,6 +1,7 @@
 package io.iifly.daily.job;
 
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
 import com.alibaba.fastjson.JSON;
@@ -46,14 +47,30 @@ public class JueJinJob implements Job {
         StringBuilder result = new StringBuilder("任务执行结果:")
                 .append(System.lineSeparator());
         try {
-            Utils.isTrue(!getTodayStatus(),
-                    () -> result
-                            .append(String.format("签到结果【%s】", checkIn()))
+            // 1.模拟从掘金浏览器扩展也进入 幸运抽奖
+            simulationAccess("https://juejin.cn/user/center/lottery?from=gold_browser_extension&utm_source=gold_browser_extension");
+            // 2，粘幸运
+            Optional.ofNullable(firstBigLotteryHistoryId())
+                    .ifPresent(historyId -> result
+                            .append(String.format("粘幸运结果【%s】", dipLucky(historyId)))
                             .append(System.lineSeparator()));
+            // 3.抽奖
             Utils.isTrue(freeDrawLotteryCount() > 0,
                     () -> result
                             .append(String.format("抽奖结果【%s】", drawLottery()))
                             .append(System.lineSeparator()));
+
+            // 4.模拟跳转 每日签到
+            simulationAccess("https://juejin.cn/user/center/signin?from=sign_in_menu_bar");
+            // 5.签到
+            Utils.isTrue(!getTodayStatus(),
+                    () -> result
+                            .append(String.format("签到结果【%s】", checkIn()))
+                            .append(System.lineSeparator()));
+
+            // 6.模拟跳转 收集bug
+            simulationAccess("https://juejin.cn/user/center/bugfix?enter_from=bugFix_bar");
+            // 7.收集bug
             Optional.ofNullable(notCollectBugs())
                     .ifPresent(bugs -> {
                         bugs.forEach(this::collectBug);
@@ -61,10 +78,8 @@ public class JueJinJob implements Job {
                                 .append(String.format("收集BUG:【%s】", bugs.size()))
                                 .append(System.lineSeparator());
                     });
-            Optional.ofNullable(firstBigLotteryHistoryId())
-                    .ifPresent(historyId -> result
-                            .append(String.format("粘幸运结果【%s】", dipLucky(historyId)))
-                            .append(System.lineSeparator()));
+            // 8. 模拟访问某些页面保持活跃,如 沸点，关注
+            conf.getJueJin().getSimulationAccess().forEach(this::simulationAccess);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.append(e.getMessage());
@@ -85,6 +100,25 @@ public class JueJinJob implements Job {
 
     public String getCookie() {
         return conf.getJueJin().getCookie();
+    }
+
+
+    /**
+     * 模拟访问
+     *
+     * @param url
+     * @return
+     */
+    public String simulationAccess(String url) {
+        HttpResponse response = HttpUtil.createGet(url).cookie(conf.getJueJin().getCookie()).execute();
+        log.info("访问：{} => {}", url, response.isOk());
+        try {
+            log.info("等待 3 秒...");
+            Thread.sleep(3 * 1000);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage(), e);
+        }
+        return response.body();
     }
 
     /**

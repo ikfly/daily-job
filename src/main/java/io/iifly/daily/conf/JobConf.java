@@ -72,5 +72,6 @@ public class JobConf {
         private String baseApi = "https://api.juejin.cn";
         private String cookie;
         private String taskName;
+        private List<String> simulationAccess;
     }
 }
