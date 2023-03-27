@@ -53,17 +53,13 @@ public class JobConf {
 
     @Data
     public static class WeatherProp {
-        // https://v0.yiketianqi.com/api?unescape=1&version=v91&appid=43656176&appsecret=I42og6Lm&ext=&cityid=&city=
-        private String baseApi = "https://v0.yiketianqi.com/api"; // 推荐
-        //        private String baseApi = "https://v0.yiketianqi.com/api"; // 备用
+        // https://v0.yiketianqi.com/free/day?appid=43656176&appsecret=I42og6Lm&unescape=1&city=
+        private String baseApi = "https://v0.yiketianqi.com/free/day"; // 推荐
+        //        private String baseApi = "https://yiketianqi.com/api"; // 备用
         private String unescape = "1";
-        private String version = "v61";
         private String appid = "43656176";
         private String appsecret = "I42og6Lm";
-        private String ext;
         private String city;
-        private String cityid;
-        private String province;
     }
 
     @Data

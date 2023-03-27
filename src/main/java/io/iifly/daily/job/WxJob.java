@@ -39,8 +39,8 @@ public class WxJob implements Job{
         date.add(new WxMpTemplateData("tem", weather.getTem(), "#00FFFF"));
         date.add(new WxMpTemplateData("city", weather.getCity(), "#AB82FF"));
         date.add(new WxMpTemplateData("wea", weather.getWea(), "#00FFFF"));
-        date.add(new WxMpTemplateData("low", weather.getTem2(), "#EEA9B8"));
-        date.add(new WxMpTemplateData("high", weather.getTem1(), "#EE9572"));
+        date.add(new WxMpTemplateData("low", weather.getTemNight(), "#EEA9B8"));
+        date.add(new WxMpTemplateData("high", weather.getTemDay(), "#EE9572"));
         date.add(new WxMpTemplateData("birth", Utils.birthStr(jobConf.getWx().getBabyBirthDay()), "#E066FF"));
         date.add(new WxMpTemplateData("love", Utils.loveStr(jobConf.getWx().getLoveDay()), "#FF6EB4"));
         date.add(new WxMpTemplateData("remark", Utils.dailySaying(LocalDate.now()) , "#1A94E6"));

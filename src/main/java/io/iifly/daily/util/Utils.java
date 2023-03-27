@@ -7,6 +7,7 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 import com.google.common.collect.Lists;
 import io.iifly.daily.conf.JobConf;
@@ -178,13 +179,10 @@ public class Utils {
     public static Weather todayWeather(JobConf.WeatherProp weather) {
         HttpRequest request = HttpUtil.createGet(weather.getBaseApi())
                 .form("unescape", weather.getUnescape())
-                .form("version", weather.getVersion())
                 .form("appid", weather.getAppid())
                 .form("appsecret", weather.getAppsecret())
-                .form("ext", weather.getExt())
                 .form("city", weather.getCity())
-                .form("cityid", weather.getCityid())
-                .form("province", weather.getProvince());
+                ;
         HttpResponse response = Utils.httpExecute(request);
         return JSON.parseObject(response.body(), Weather.class);
     }
@@ -196,8 +194,10 @@ public class Utils {
         private String city;
         private String wea;
         private String tem;
-        private String tem2;
-        private String tem1;
+        @JSONField(name = "tem_day")
+        private String temDay;
+        @JSONField(name = "tem_night")
+        private String temNight;
     }
 
 
