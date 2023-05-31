@@ -131,6 +131,7 @@ public class Utils {
 
     public static void pushTemplateMessage(WxMpService wxMpService, WxMpTemplateMessage message) {
         try {
+            log.info("pushTemplateMessage:{}", JSON.toJSONString(message));
             wxMpService.getTemplateMsgService().sendTemplateMsg(message);
             log.info("pushTemplateMessage is success");
         } catch (Exception e) {
@@ -157,14 +158,14 @@ public class Utils {
         LocalDate now = LocalDate.now();
         int loveYear = now.getYear() - loveDay.getYear();
         if (now.getMonthValue() == loveDay.getMonthValue() && now.getDayOfMonth() == loveDay.getDayOfMonth()) {
-            return String.format("亲爱的，今天是我们相恋%s周年纪念日哦！我们已经相恋%s天了！", loveYear, now.toEpochDay() - loveDay.toEpochDay() + 1);
+            return String.format("今天是相恋%s周年纪念日哦！已经%s天了！", loveYear, now.toEpochDay() - loveDay.toEpochDay() + 1);
         }
         LocalDate nextLoveDay = LocalDate.of(now.getYear(), loveDay.getMonthValue(), loveDay.getDayOfMonth());
         if (now.isAfter(nextLoveDay)) {
             nextLoveDay = nextLoveDay.plusYears(1);
             loveYear += 1;
         }
-        return String.format("亲爱的，我们已经相恋%s天了！再过%s天就是我们%s周年纪念日了！",
+        return String.format("我们相恋%s天了！再过%s天就是%s周年纪念日啦！",
                 now.toEpochDay() - loveDay.toEpochDay() + 1,
                 nextLoveDay.toEpochDay() - now.toEpochDay(),
                 loveYear
@@ -201,20 +202,20 @@ public class Utils {
     }
 
 
-    public static String dailySaying(LocalDate date) {
-        String res = dailySayingForShanBay(date).toString();
-        if(StringUtils.hasText(res)){
+    public static Saying dailySaying(LocalDate date) {
+        Saying res = dailySayingForShanBay(date);
+        if(StringUtils.hasText(res.content)){
             return res;
         }
-        res = dailySayingForAa1Renjian().toString();
-        if(StringUtils.hasText(res)){
+        res = dailySayingForAa1Renjian();
+        if(StringUtils.hasText(res.content)){
             return res;
         }
-        res = dailySayingForAa1WenanYingwen().toString();
-        if(StringUtils.hasText(res)){
+        res = dailySayingForAa1WenanYingwen();
+        if(StringUtils.hasText(res.content)){
             return res;
         }
-        return "开心快乐每一天！";
+        return new Saying().setContent("Happy every day!").setTranslation("开心快乐每一天！");
     }
     /**
      * aa1 我在人间凑数的日子 一言 api

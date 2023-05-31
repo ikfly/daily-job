@@ -33,24 +33,26 @@ public class WxJob implements Job{
 
     public void push() {
         Utils.Weather weather = Utils.todayWeather(jobConf.getWeather());
-        List<WxMpTemplateData> date = Lists.newArrayList();
-        date.add(new WxMpTemplateData("date", weather.getDate(), "#63B8FF"));
-        date.add(new WxMpTemplateData("week", weather.getWeek(), "#63B8FF"));
-        date.add(new WxMpTemplateData("tem", weather.getTem(), "#00FFFF"));
-        date.add(new WxMpTemplateData("city", weather.getCity(), "#AB82FF"));
-        date.add(new WxMpTemplateData("wea", weather.getWea(), "#00FFFF"));
-        date.add(new WxMpTemplateData("low", weather.getTemNight(), "#EEA9B8"));
-        date.add(new WxMpTemplateData("high", weather.getTemDay(), "#EE9572"));
-        date.add(new WxMpTemplateData("birth", Utils.birthStr(jobConf.getWx().getBabyBirthDay()), "#E066FF"));
-        date.add(new WxMpTemplateData("love", Utils.loveStr(jobConf.getWx().getLoveDay()), "#FF6EB4"));
-        date.add(new WxMpTemplateData("remark", Utils.dailySaying(LocalDate.now()) , "#1A94E6"));
+        List<WxMpTemplateData> data = Lists.newArrayList();
+        data.add(new WxMpTemplateData("date", weather.getDate(), "#63B8FF"));
+        data.add(new WxMpTemplateData("week", weather.getWeek(), "#63B8FF"));
+        data.add(new WxMpTemplateData("tem", weather.getTem(), "#00FFFF"));
+        data.add(new WxMpTemplateData("city", weather.getCity(), "#AB82FF"));
+        data.add(new WxMpTemplateData("wea", weather.getWea(), "#00FFFF"));
+        data.add(new WxMpTemplateData("low", weather.getTemNight(), "#EEA9B8"));
+        data.add(new WxMpTemplateData("high", weather.getTemDay(), "#EE9572"));
+        data.add(new WxMpTemplateData("birth", Utils.birthStr(jobConf.getWx().getBabyBirthDay()), "#E066FF"));
+        data.add(new WxMpTemplateData("love", Utils.loveStr(jobConf.getWx().getLoveDay()), "#FF6EB4"));
+        Utils.Saying saying = Utils.dailySaying(LocalDate.now());
+        data.add(new WxMpTemplateData("say1", saying.getContent(), "#1A94E6"));
+        data.add(new WxMpTemplateData("say2", saying.getTranslation(), "#1A94E6"));
         JobConf.WxProp wx = jobConf.getWx();
         wx.getToUser().forEach(user -> {
             WxMpTemplateMessage message = WxMpTemplateMessage
                     .builder()
                     .toUser(user)
                     .templateId(wx.getTemplateId())
-                    .data(date)
+                    .data(data)
                     .build();
             Utils.pushTemplateMessage(wxMpService, message);
         });
