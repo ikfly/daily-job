@@ -71,13 +71,13 @@ public class JueJinJob implements Job {
             // 6.模拟跳转 收集bug
             simulationAccess("https://juejin.cn/user/center/bugfix?enter_from=bugFix_bar");
             // 7.收集bug
-            Optional.ofNullable(notCollectBugs())
-                    .ifPresent(bugs -> {
-                        bugs.forEach(this::collectBug);
-                        result
-                                .append(String.format("收集BUG:【%s】", bugs.size()))
-                                .append(System.lineSeparator());
-                    });
+//            Optional.ofNullable(notCollectBugs())
+//                    .ifPresent(bugs -> {
+//                        bugs.forEach(this::collectBug);
+//                        result
+//                                .append(String.format("收集BUG:【%s】", bugs.size()))
+//                                .append(System.lineSeparator());
+//                    });
             // 8. 模拟访问某些页面保持活跃,如 沸点，关注
             conf.getJueJin().getSimulationAccess().forEach(this::simulationAccess);
         } catch (Exception e) {
