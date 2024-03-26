@@ -49,11 +49,11 @@ public class JueJinJob implements Job {
         try {
             // 1.模拟从掘金浏览器扩展也进入 幸运抽奖
             simulationAccess("https://juejin.cn/user/center/lottery?from=gold_browser_extension&utm_source=gold_browser_extension");
-            // 2，粘幸运
-            Optional.ofNullable(firstBigLotteryHistoryId())
-                    .ifPresent(historyId -> result
-                            .append(String.format("粘幸运结果【%s】", dipLucky(historyId)))
-                            .append(System.lineSeparator()));
+            // 2，粘幸运（弃用）
+//            Optional.ofNullable(firstBigLotteryHistoryId())
+//                    .ifPresent(historyId -> result
+//                            .append(String.format("粘幸运结果【%s】", dipLucky(historyId)))
+//                            .append(System.lineSeparator()));
             // 3.抽奖
             Utils.isTrue(freeDrawLotteryCount() > 0,
                     () -> result
@@ -68,9 +68,9 @@ public class JueJinJob implements Job {
                             .append(String.format("签到结果【%s】", checkIn()))
                             .append(System.lineSeparator()));
 
-            // 6.模拟跳转 收集bug
-            simulationAccess("https://juejin.cn/user/center/bugfix?enter_from=bugFix_bar");
-            // 7.收集bug
+            // 6.模拟跳转 收集bug（弃用）
+//            simulationAccess("https://juejin.cn/user/center/bugfix?enter_from=bugFix_bar");
+            // 7.收集bug（弃用
 //            Optional.ofNullable(notCollectBugs())
 //                    .ifPresent(bugs -> {
 //                        bugs.forEach(this::collectBug);
